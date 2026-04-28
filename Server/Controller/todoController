@@ -1,0 +1,72 @@
+const model=require("../Model/todoModel")
+
+const controller={
+    async createTask(req,res){
+        try{
+           const {tasks,date}=req.body
+           const createdTask=await model.create({tasks,date})
+           res.status(201).json({message:"Task created successfully", tasks:createdTask})
+        }
+        catch(error){
+           res.status(500).json({message:"Something went wrong", error:error.message})
+        }
+    },
+    async getAllTasks(req,res){
+        try{
+            const getTasks=await model.find()
+            res.status(201).json({tasks:getTasks})
+        }
+        catch(error){
+            res.status(500).json({message:"Something went wrong",error:error.message})
+        }
+    },
+    async getTaskById(req,res){
+        try{
+            const{id}=req.params
+            const getOneTask= await model.findOne({_id:id})
+            if(!getOneTask){
+                res.status(404).json({status:false,message:"User not found"})
+            }
+            else{
+                res.status(201).json({status:true,tasks:getOneTask})
+            }
+        }
+        catch(error){
+            res.status(500).json({message:"Something went wrong", error:error.message})
+        }
+    },
+    async updateTask(req,res){
+        try{
+            const{id}=req.params
+            const getOneTask=await model.findOne({_id:id})
+            if(!getOneTask){
+                res.status(404).json({status:false,message:"User not found"})
+            }
+            else{
+                const {tasks,date}=req.body
+                const updatedTask=await model.updateOne({_id:id},{tasks,date})
+                res.status(201).json({status:true,tasks:updatedTask})
+            }
+        }
+        catch(error){
+            res.status(500).json({message:"Something went wrong", error:error.message})
+        }
+    },
+    async deleteTask(req,res){
+        try{
+            const{id}=req.params
+            const getOneTask=await model.findOne({_id:id})
+            if(!getOneTask){
+                res.status(404).json({status:false,message:"User not found"})
+            }
+            else{
+                const deletedTask=await model.deleteOne({_id:id})
+                res.status(201).json({status:true,tasks:deletedTask})
+            }
+        }
+        catch(error){
+            res.status(500).json({message:"Something went wrong", error:error.message})
+        }
+    }
+}
+module.exports=controller
